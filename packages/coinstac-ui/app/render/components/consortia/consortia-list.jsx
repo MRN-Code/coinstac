@@ -592,6 +592,7 @@ ConsortiaList.propTypes = {
   classes: PropTypes.object.isRequired,
   client: PropTypes.object.isRequired,
   consortia: PropTypes.array.isRequired,
+  dockerStatus: PropTypes.bool,
   maps: PropTypes.array.isRequired,
   pipelines: PropTypes.array.isRequired,
   router: PropTypes.object.isRequired,

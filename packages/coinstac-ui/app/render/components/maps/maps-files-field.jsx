@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import FilePicker from '../common/file-picker';
 
 const styles = theme => ({
@@ -12,8 +13,16 @@ const styles = theme => ({
     paddingBottom: theme.spacing(1.5),
     marginTop: theme.spacing(1.5),
   },
-  capitalize: {
+  header: {
     textTransform: 'capitalize',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  successIcon: {
+    width: 40,
+    height: 40,
+    color: '#43a047',
   },
 });
 
@@ -42,8 +51,9 @@ function MapsFilesField({
 
   return (
     <Paper className={classes.rootPaper} elevation={2}>
-      <Typography variant="h4" className={classes.capitalize}>
-        { fieldName }
+      <Typography variant="h4" className={classes.header}>
+        {fieldName}
+        {Boolean(fieldDataMap) && <CheckCircleIcon className={classes.successIcon} />}
       </Typography>
       <FilePicker
         multiple

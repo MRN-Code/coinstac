@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -13,21 +14,79 @@ const styles = theme => ({
     justifyContent: 'flex-end',
   },
   successMessage: {
+    fontSize: 16,
     marginRight: theme.spacing(1),
     display: 'flex',
     alignItems: 'center',
   },
   successIcon: {
     marginLeft: theme.spacing(0.5),
+    width: 30,
+    height: 30,
     color: '#43a047',
+  },
+  backButton: {
+    marginLeft: theme.spacing(1),
   },
 });
 
 function MapsEditForm({
-  pipeline, dataMap, onSubmit, onChange, saved, classes,
+  consortiumId, pipeline, dataMap, onSubmit, onChange, saved, classes,
 }) {
+  const getDataIsMapped = () => {
+    if (!pipeline || !pipeline.steps || pipeline.steps.length === 0) {
+      return false;
+    }
+
+    for (const step of pipeline.steps) { // eslint-disable-line no-restricted-syntax
+      const { inputMap } = step;
+
+      const unmappedCount = Object.keys(inputMap)
+        .filter(inputKey => !inputMap[inputKey].fulfilled)
+        .filter(inputKey => !dataMap[inputKey])
+        .length;
+
+      if (unmappedCount > 0) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const isDataMapped = getDataIsMapped();
+
   return (
     <form onSubmit={onSubmit}>
+      <div className={classes.saveButtonContainer}>
+        {
+          (saved || isDataMapped) && (
+            <span className={classes.successMessage}>
+              Data map saved
+              <CheckCircleIcon className={classes.successIcon} />
+            </span>
+          )
+        }
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+        >
+          Save
+        </Button>
+        {isDataMapped && (
+          <Button
+            className={classes.backButton}
+            component={Link}
+            to={`/dashboard/consortia/${consortiumId}`}
+            variant="contained"
+            color="primary"
+            type="submit"
+          >
+            Back to Consortium
+          </Button>
+        )}
+      </div>
       {
         pipeline && pipeline.steps && pipeline.steps.map((step) => {
           const { computations, inputMap } = step;
@@ -65,28 +124,12 @@ function MapsEditForm({
             });
         })
       }
-      <div className={classes.saveButtonContainer}>
-        {
-          saved && (
-            <span className={classes.successMessage}>
-              Data map saved
-              <CheckCircleIcon className={classes.successIcon} />
-            </span>
-          )
-        }
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-        >
-          Save
-        </Button>
-      </div>
     </form>
   );
 }
 
 MapsEditForm.propTypes = {
+  consortiumId: PropTypes.string.isRequired,
   pipeline: PropTypes.object,
   dataMap: PropTypes.object.isRequired,
   onSubmit: PropTypes.func.isRequired,
